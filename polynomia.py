@@ -5,6 +5,9 @@ class X:
     def __repr__(self):
         return "X"
 
+    def evaluate(self, value):
+        return value
+
 
 class Int:
     def __init__(self, i):
@@ -12,6 +15,9 @@ class Int:
 
     def __repr__(self):
         return str(self.i)
+
+    def evaluate(self, value):
+        return self.i
 
 
 class Add:
@@ -21,6 +27,9 @@ class Add:
 
     def __repr__(self):
         return repr(self.p1) + " + " + repr(self.p2)
+
+    def evaluate(self, value):
+        return self.p1.evaluate(value) + self.p2.evaluate(value)
 
 
 class Div:
@@ -41,6 +50,12 @@ class Div:
 
         return left + " / " + right
 
+    def evaluate(self, value):
+        denominator = self.p2.evaluate(value)
+        if denominator == 0:
+            raise ZeroDivisionError("Division by zero is not allowed")
+        return self.p1.evaluate(value) / denominator
+
 
 class Sub:
     def __init__(self, p1, p2):
@@ -59,6 +74,9 @@ class Sub:
             right = repr(self.p2)
 
         return left + " - " + right
+
+    def evaluate(self, value):
+        return self.p1.evaluate(value) - self.p2.evaluate(value)
 
 
 class Mul:
@@ -79,12 +97,15 @@ class Mul:
 
         return left + " * " + right
 
+    def evaluate(self, value):
+        return self.p1.evaluate(value) * self.p2.evaluate(value)
+
 
 poly = Add(
     Sub(
         Mul(
             Int(3),
-            Div(X(), Int(2))
+            Div(X(), X())
         ),
         Int(5)
     ),
@@ -101,3 +122,10 @@ poly = Add(
 )
 
 print(poly)
+
+for x_value in [-1, 0, 1, 2]:
+    try:
+        result = poly.evaluate(x_value)
+        print(f"poly.evaluate({x_value}) = {result}")
+    except ZeroDivisionError as e:
+        print(f"Error evaluating poly at X = {x_value}: {e}")
